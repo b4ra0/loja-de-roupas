@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loja/providers/cart.dart' show Cart;
+import 'package:loja/providers/orders.dart';
 import 'package:provider/provider.dart';
 import 'package:loja/widgets/cart_item.dart';
 
@@ -30,10 +31,13 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   Chip(
-                    label: Text("\$${cart.totalAmount}"),
+                    label: Text("R\$${cart.totalAmount.toStringAsFixed(2)}"),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false).addOrder(cart.items.values.toList(), cart.totalAmount);
+                      cart.clear();
+                    },
                     child: const Text(
                       "ORDER NOW",
                       style: TextStyle(color: Colors.yellow),

@@ -32,7 +32,7 @@ class ProductDetailScreen extends StatelessWidget {
               ),
             ),
             Text(
-              '\$${loadedProduct.price}',
+              'R\$${loadedProduct.price}',
               style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 20,

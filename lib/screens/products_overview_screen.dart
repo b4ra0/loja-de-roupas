@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loja/providers/cart.dart';
-import 'package:loja/providers/product.dart';
 import 'package:loja/providers/products.dart';
 import 'package:loja/screens/cart_screen.dart';
+import 'package:loja/widgets/app_drawer.dart';
 import 'package:loja/widgets/badge.dart';
 import 'package:loja/widgets/products_grid.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +26,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   Widget build(BuildContext context) {
     final productsContainer = Provider.of<Products>(context, listen: false);
     return Scaffold(
+      drawer: AppDrawer(),
       appBar: AppBar(
         title: const Text("Minha loja"),
         actions: [
@@ -37,10 +38,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 } else {
                   _showOnlyFavorites = false;
                 }
-                ;
               });
-
-              print(selectedValue);
             },
             icon: const Icon(
               Icons.more_vert,

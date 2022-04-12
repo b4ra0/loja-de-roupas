@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loja/providers/product.dart';
 
-class Products with ChangeNotifier{
+class Products with ChangeNotifier {
   final List<Product> _items = [
     Product(
       id: "p1",
@@ -9,13 +9,6 @@ class Products with ChangeNotifier{
       description: "A red shirt - it is pretty red",
       price: 29.99,
       imageUrl: "https://cdn.awsli.com.br/800x800/44/44273/produto/29989858/b28e079baa.jpg",
-    ),
-    Product(
-      id: "p2",
-      title: "Tênis casual",
-      description: "A red shirt - it is pretty red",
-      price: 129.99,
-      imageUrl: "https://a-static.mlcdn.com.br/618x463/tenis-casual-masculino-portice-queen/portice/12441677517/8b2fc6c61f05881df40c9010f6778637.jpg",
     ),
     Product(
       id: "p3",
@@ -31,39 +24,56 @@ class Products with ChangeNotifier{
       price: 29.99,
       imageUrl: "https://static.netshoes.com.br/produtos/meia-cano-medio-puma-logo-c-3-pares/58/D14-7141-158/D14-7141-158_zoom1.jpg?ts=1570543225",
     ),
+    Product(
+      id: "p2",
+      title: "Tênis casual",
+      description: "A red shirt - it is pretty red",
+      price: 129.99,
+      imageUrl: "https://a-static.mlcdn.com.br/618x463/tenis-casual-masculino-portice-queen/portice/12441677517/8b2fc6c61f05881df40c9010f6778637.jpg",
+    ),
   ];
 
   // var _showFavoritesOnly = false;
 
 
-
-  List<Product> get items{
-    // if (_showFavoritesOnly){
-    //   return _items.where((prodItem) => prodItem.isFavorite).toList();
-    // }
+  List<Product> get items {
     return [..._items];
   }
 
-  List<Product> get favoritesItems{
+  List<Product> get favoritesItems {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
-  Product findById(String id){
+  Product findById(String id) {
     return _items.firstWhere((produto) => produto.id == id);
   }
 
-  // void showFavoritesOnly(){
-  //   _showFavoritesOnly = true;
-  //   notifyListeners();
-  // }
-  //
-  // void showAll(){
-  //   _showFavoritesOnly = false;
-  //   notifyListeners();
-  // }
+  void addProduct(Product product) {
+    final newProduct = Product(
+      id: DateTime.now().toString(),
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+    );
+    _items.add(newProduct);
+    // items.insert(0, newProduct);
+    notifyListeners();
+  }
 
-  void addProduct(){
-    // items.add(value);
+  void updateProduct(String id, Product newProduct){
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0){
+      _items[prodIndex] = newProduct;
+    } else{
+      print("não foi possível localizar o produto");
+    }
+
+    notifyListeners();
+  }
+
+  void deleteProduct(String id){
+    _items.removeWhere((prod) => prod.id == id);
     notifyListeners();
   }
 }

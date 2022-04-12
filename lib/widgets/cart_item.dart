@@ -13,7 +13,6 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Dismissible(
       direction: DismissDirection.endToStart,
       key: ValueKey(id),
@@ -27,19 +26,49 @@ class CartItem extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 15),
       ),
+      confirmDismiss: (direction) {
+        return showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text("Excluir produto"),
+            content: const Text("Você deseja remover o produto do seu carrinho?"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text("Excluir"),
+              ),
+            ],
+          ),
+        );
+      },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
+              backgroundColor: Colors.yellow,
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: FittedBox(child: Text("\$$price")),
+                child: FittedBox(
+                  child: Text(
+                    "R\$$price",
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ),
             title: Text(title),
-            subtitle: Text("Total: ${(price * quantity)}"),
+            subtitle: Text("Total: R\$${(price * quantity)}"),
             trailing: Text("$quantity x"),
           ),
         ),
