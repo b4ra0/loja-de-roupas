@@ -73,7 +73,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
@@ -92,31 +92,32 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
       Navigator.pop(context);
     } else {
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_editedProduct)
-          .catchError((error) {
-        showDialog(
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('Erro'),
-            content: Text("Ocorreu um erro e o produto não foi cadastrado"),
+            title: const Text('Erro'),
+            content: const Text("Ocorreu um erro e o produto não foi cadastrado"),
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(ctx);
                 },
-                child: Text("Ok"),
+                child: const Text("Ok"),
               ),
             ],
           ),
         );
-      }).then((_) {
+      } finally{
         setState(() {
           _isLoading = false;
           print(_isLoading);
         });
         Navigator.pop(context);
-      });
+      }
     }
   }
 
@@ -256,11 +257,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               }
                               if (!value.startsWith('http') &&
                                   !value.startsWith('https')) {
-                                return 'Por favor, digite uma URL válida';
-                              }
-                              if (!value.endsWith('png') &&
-                                  !value.endsWith('jpg') &&
-                                  !value.endsWith('.jpeg')) {
                                 return 'Por favor, digite uma URL válida';
                               }
                               return null;
