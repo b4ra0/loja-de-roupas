@@ -45,11 +45,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ),
             itemBuilder: (_) => [
               const PopupMenuItem(
-                child: Text("Only favorites"),
+                child: Text("Favoritos"),
                 value: FilterOptions.Favorites,
               ),
               const PopupMenuItem(
-                child: Text("Show All"),
+                child: Text("Todos"),
                 value: FilterOptions.All,
               ),
             ],

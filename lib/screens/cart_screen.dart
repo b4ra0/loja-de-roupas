@@ -25,7 +25,7 @@ class CartScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "total",
+                    "Total",
                     style: TextStyle(
                       fontSize: 20,
                     ),
@@ -35,12 +35,19 @@ class CartScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(cart.items.values.toList(), cart.totalAmount);
-                      cart.clear();
+                      if (cart.items.isEmpty){
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Carrinho vazio!"))
+                        );
+                      } else{
+                        Provider.of<Orders>(context, listen: false).addOrder(cart.items.values.toList(), cart.totalAmount);
+                        cart.clear();
+                      }
                     },
                     child: const Text(
-                      "ORDER NOW",
-                      style: TextStyle(color: Colors.yellow),
+                      "FINALIZAR PEDIDO",
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ],
