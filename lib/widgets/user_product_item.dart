@@ -22,14 +22,29 @@ class UserProductItem extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(EditProductScreen.routeName, arguments: id);
+              Navigator.of(context)
+                  .pushNamed(EditProductScreen.routeName, arguments: id);
             },
             icon: const Icon(Icons.edit),
             color: Colors.black,
           ),
           IconButton(
-            onPressed: () {
-              Provider.of<Products>(context, listen: false).deleteProduct(id);
+            onPressed: () async{
+              try {
+                await Provider.of<Products>(context, listen: false).deleteProduct(id);
+              } catch (error) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Ocorreu um erro durante a exclusão"),
+                  ),
+                );
+              } finally{
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Produto excluído com sucesso!"),
+                  ),
+                );
+              }
             },
             icon: const Icon(Icons.delete),
             color: Theme.of(context).errorColor,

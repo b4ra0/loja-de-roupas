@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:loja/models/http_exception.dart';
 import 'package:loja/providers/product.dart';
 
 class Products with ChangeNotifier {
@@ -69,6 +70,7 @@ class Products with ChangeNotifier {
             description: prodData['description'],
             price: prodData['price'],
             imageUrl: prodData['imageUrl'],
+            isFavorite: prodData['isFavorite']
           ),
         );
       });
@@ -99,6 +101,7 @@ class Products with ChangeNotifier {
         description: product.description,
         price: product.price,
         imageUrl: product.imageUrl,
+        isFavorite: false,
       );
       _items.add(newProduct);
       notifyListeners();
@@ -126,8 +129,18 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
-    notifyListeners();
+  Future<void> deleteProduct(String id) async {
+    final url = Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/products/$id.json');
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
+    final response = await http.delete(url).then((response) {
+      if (response.statusCode >= 400){
+        _items.insert(existingProductIndex, existingProduct);
+        throw HttpException('Ocorreu um erro durante a exclusão do produto');
+      } else{
+        notifyListeners();
+      }
+    });
   }
 }

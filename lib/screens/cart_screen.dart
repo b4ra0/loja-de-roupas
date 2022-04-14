@@ -6,11 +6,9 @@ import 'package:loja/widgets/cart_item.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
-
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
-    print(cart.items);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Seu carrinho"),
@@ -33,23 +31,7 @@ class CartScreen extends StatelessWidget {
                   Chip(
                     label: Text("R\$${cart.totalAmount.toStringAsFixed(2)}"),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      if (cart.items.isEmpty){
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Carrinho vazio!"))
-                        );
-                      } else{
-                        Provider.of<Orders>(context, listen: false).addOrder(cart.items.values.toList(), cart.totalAmount);
-                        cart.clear();
-                      }
-                    },
-                    child: const Text(
-                      "FINALIZAR PEDIDO",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
+                  OrderButton(cart: cart),
                 ],
               ),
             ),
@@ -68,6 +50,50 @@ class CartScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key? key,
+    required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () async{
+        setState(() {
+          _isLoading = true;
+        });
+        if (widget.cart.items.isEmpty){
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Carrinho vazio!"))
+          );
+        } else{
+          await Provider.of<Orders>(context, listen: false).addOrder(widget.cart.items.values.toList(), widget.cart.totalAmount);
+          Future.delayed(const Duration(seconds: 2)).then((_) {
+            setState(() {
+              _isLoading = false;
+            });
+            widget.cart.clear();
+          });
+        }
+      },
+      child: _isLoading ? const CircularProgressIndicator() : const Text(
+        "FINALIZAR PEDIDO",
+        style: TextStyle(color: Colors.black),
       ),
     );
   }

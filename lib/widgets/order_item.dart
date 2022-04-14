@@ -39,13 +39,21 @@ class _OrderItemState extends State<OrderItem> {
               padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 4),
               height: min(widget.order.products.length * 20 + 25, 180),
               child: ListView(
-                children: widget.order.products.map((prod) => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(prod.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                    Text('${prod.quantity}x R\$${prod.price}')
-                  ],
-                )).toList(),
+                children: widget.order.products
+                    .map(
+                      (prod) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            prod.title,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text('${prod.quantity}x R\$${prod.price}')
+                        ],
+                      ),
+                    )
+                    .toList(),
               ),
             ),
         ],
