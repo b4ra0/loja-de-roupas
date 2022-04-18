@@ -20,18 +20,17 @@ class Product with ChangeNotifier{
     required this.isFavorite,
   });
 
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus(String authToken, String userId) async {
     final url = Uri.parse(
-        'https://loja-barao-default-rtdb.firebaseio.com/products/$id.json');
+        'https://loja-barao-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken');
     final response = await http.get(url);
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     isFavorite = !extractedData['isFavorite'];
     final url2 = Uri.parse(
-        'https://loja-barao-default-rtdb.firebaseio.com/products/$id.json');
+        'https://loja-barao-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken');
     await http.patch(url2, body: jsonEncode({
       'isFavorite': isFavorite,
     }));
     notifyListeners();
   }
-
 }

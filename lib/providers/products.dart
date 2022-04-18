@@ -43,6 +43,10 @@ class Products with ChangeNotifier {
 
   // var _showFavoritesOnly = false;
 
+  final String authToken;
+
+  Products(this.authToken, this._items);
+
   List<Product> get items {
     return [..._items];
   }
@@ -57,7 +61,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.parse(
-        'https://loja-barao-default-rtdb.firebaseio.com/products.json');
+        'https://loja-barao-default-rtdb.firebaseio.com/products.json?auth=$authToken');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -75,7 +79,6 @@ class Products with ChangeNotifier {
         );
       });
       _items = loadedProducts;
-      print(extractedData);
       notifyListeners();
     } catch (error) {
       throw error;
@@ -83,7 +86,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://loja-barao-default-rtdb.firebaseio.com/products.json';
+    final url = 'https://loja-barao-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -106,7 +109,6 @@ class Products with ChangeNotifier {
       _items.add(newProduct);
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
   }
@@ -114,7 +116,7 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async{
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/products/$id.json');
+      final url = Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
       await http.patch(url, body: json.encode({
         'title': newProduct.title,
         'description': newProduct.description,
@@ -123,14 +125,13 @@ class Products with ChangeNotifier {
       }));
       _items[prodIndex] = newProduct;
     } else {
-      print("não foi possível localizar o produto");
     }
 
     notifyListeners();
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/products/$id.json');
+    final url = Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);

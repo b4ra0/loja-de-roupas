@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:loja/providers/cart.dart' show Cart;
 import 'package:loja/providers/orders.dart';
-import 'package:provider/provider.dart';
 import 'package:loja/widgets/cart_item.dart';
+import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
@@ -69,32 +70,47 @@ class OrderButton extends StatefulWidget {
 
 class _OrderButtonState extends State<OrderButton> {
   var _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () async{
-        setState(() {
-          _isLoading = true;
-        });
-        if (widget.cart.items.isEmpty){
+      onPressed: () async {
+        if (_isLoading == false) {
+          if (widget.cart.items.isEmpty) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Carrinho vazio!"),
+              ),
+            );
+          } else {
+            setState(() {
+              _isLoading = true;
+            });
+            await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cart.items.values.toList(), widget.cart.totalAmount);
+            Future.delayed(const Duration(seconds: 2)).then((_) {
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cart.clear();
+            });
+          }
+        } else {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Carrinho vazio!"))
+            const SnackBar(
+              content: Text("Carregando sua compra"),
+            ),
           );
-        } else{
-          await Provider.of<Orders>(context, listen: false).addOrder(widget.cart.items.values.toList(), widget.cart.totalAmount);
-          Future.delayed(const Duration(seconds: 2)).then((_) {
-            setState(() {
-              _isLoading = false;
-            });
-            widget.cart.clear();
-          });
         }
       },
-      child: _isLoading ? const CircularProgressIndicator() : const Text(
-        "FINALIZAR PEDIDO",
-        style: TextStyle(color: Colors.black),
-      ),
+      child: _isLoading
+          ? const CircularProgressIndicator()
+          : const Text(
+              "FINALIZAR PEDIDO",
+              style: TextStyle(color: Colors.black),
+            ),
     );
   }
 }
