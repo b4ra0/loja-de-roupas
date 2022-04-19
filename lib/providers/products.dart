@@ -61,9 +61,10 @@ class Products with ChangeNotifier {
     return _items.firstWhere((produto) => produto.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = true]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId': '';
     final url = Uri.parse(
-        'https://loja-barao-default-rtdb.firebaseio.com/products.json?auth=$authToken&orderBy="creatorId"&equalTo="$userId"');
+        'https://loja-barao-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString"');
     final urlFav = Uri.parse(
         'https://loja-barao-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
     try {
