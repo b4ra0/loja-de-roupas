@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -20,8 +21,9 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
   final String authToken;
+  final String userId;
 
-  Orders(this.authToken, this._orders);
+  Orders(this.authToken, this.userId, this._orders);
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -29,8 +31,8 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final url =
-        Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
-    final response = await http.get(url);
+        Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken');
+    final response = await http.get(url).timeout(Duration(seconds: 10));
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     extractedData.forEach((orderId, orderData) {
@@ -54,7 +56,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url =
-        Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
+        Uri.parse('https://loja-barao-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken');
     final timestamp = DateTime.now();
     final response = await http.post(url,
         body: json.encode({
@@ -68,7 +70,7 @@ class Orders with ChangeNotifier {
                     'price': cp.price.toStringAsFixed(2),
                   })
               .toList(),
-        }));
+        })).timeout(Duration(seconds: 10));
     _orders.insert(
       0,
       OrderItem(
