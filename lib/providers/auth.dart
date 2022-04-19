@@ -12,7 +12,6 @@ class Auth with ChangeNotifier {
   String? get userId => _userId;
 
   bool get isAuth {
-    print(token);
     return token!.length > 15;
   }
 
@@ -39,7 +38,6 @@ class Auth with ChangeNotifier {
           },
         ),
       );
-      print(response.body);
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
@@ -53,7 +51,6 @@ class Auth with ChangeNotifier {
       );
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
   }

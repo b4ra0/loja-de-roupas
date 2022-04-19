@@ -41,8 +41,8 @@ class AppDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text("Gerenciar produtos"),
+            leading: const Icon(Icons.logout, color: Colors.red,),
+            title: const Text("Sair", style: TextStyle(color: Colors.red),),
             onTap: (){
               Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
             },

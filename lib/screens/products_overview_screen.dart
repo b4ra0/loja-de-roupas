@@ -14,6 +14,7 @@ enum FilterOptions {
 
 class ProductsOverviewScreen extends StatefulWidget {
   static const routeName = '/products-overview';
+
   ProductsOverviewScreen({Key? key}) : super(key: key);
 
   @override
@@ -24,6 +25,10 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
   var _isInit = true;
   var _isLoading = false;
+
+  Future<void> _refreshProducts(BuildContext context) async{
+    await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+  }
 
   @override
   void initState() {
@@ -47,7 +52,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final productsContainer = Provider.of<Products>(context, listen: false);
@@ -69,8 +73,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             icon: const Icon(
               Icons.more_vert,
             ),
-            itemBuilder: (_) =>
-            [
+            itemBuilder: (_) => [
               const PopupMenuItem(
                 child: Text("Favoritos"),
                 value: FilterOptions.Favorites,
@@ -82,11 +85,10 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ],
           ),
           Consumer<Cart>(
-            builder: (_, cart, ch) =>
-                Badge(
-                    child: ch!,
-                    value: cart.itemCount.toString(),
-                    color: Colors.red),
+            builder: (_, cart, ch) => Badge(
+                child: ch!,
+                value: cart.itemCount.toString(),
+                color: Colors.red),
             child: IconButton(
               icon: const Icon(Icons.shopping_cart),
               onPressed: () {
@@ -96,7 +98,14 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
-      body: _isLoading ? const Center(child: CircularProgressIndicator(),) : ProductsGrid(_showOnlyFavorites),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: () => Future.delayed(Duration(seconds: 1)).then((value) => _refreshProducts(context)),
+              child: ProductsGrid(_showOnlyFavorites),
+            ),
     );
   }
 }
