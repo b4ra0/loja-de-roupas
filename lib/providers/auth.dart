@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ class Auth with ChangeNotifier {
   String? _token;
   DateTime? _expiryDate;
   String? _userId;
+  Timer? _authTimer;
 
   String? get userId => _userId;
 
@@ -49,6 +51,8 @@ class Auth with ChangeNotifier {
           seconds: int.parse(responseData['expiresIn']),
         ),
       );
+      print(responseData['expiresIn']);
+      _autoLogout();
       notifyListeners();
     } catch (error) {
       throw error;
@@ -63,5 +67,25 @@ class Auth with ChangeNotifier {
   Future<void> login(String email, String password) async {
     return _authenticate(email, password,
         "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCW2-nb44WJHcfq2lqUyzZkwYBpC1mPxmA");
+  }
+
+  void logout(){
+    _token = null;
+    _userId = null;
+    _expiryDate = null;
+    if(_authTimer != null){
+      _authTimer!.cancel();
+      _authTimer = null;
+    }
+    notifyListeners();
+    print("Você foi deslogado!");
+  }
+
+  void _autoLogout() async{
+    if (_authTimer != null){
+      _authTimer!.cancel();
+    }
+    final timeToExpiry = _expiryDate!.difference(DateTime.now()).inSeconds;
+    _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
   }
 }

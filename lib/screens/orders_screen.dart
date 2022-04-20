@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:loja/providers/orders.dart' show Orders;
 import 'package:loja/widgets/app_drawer.dart';
@@ -21,7 +23,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+      try {
+        await Provider.of<Orders>(context, listen: false)
+            .fetchAndSetOrders()
+            .timeout(const Duration(seconds: 5));
+      } catch (error){
+        print(error);
+        return const Center(
+          child: Text("está vazio!"),
+        );
+      }
       setState(() {
         _isLoading = false;
       });

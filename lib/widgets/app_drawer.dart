@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:loja/providers/auth.dart';
 import 'package:loja/screens/auth_screen.dart';
 import 'package:loja/screens/orders_screen.dart';
 import 'package:loja/screens/user_products_screen.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -45,6 +47,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text("Sair", style: TextStyle(color: Colors.red),),
             onTap: (){
               Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+              Provider.of<Auth>(context, listen: false).logout();
             },
           ),
         ],
